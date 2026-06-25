@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import rca.inventario.api_inventario.models.Producto;
 import rca.inventario.api_inventario.services.ProductoService;
 
 @RestController
 @RequestMapping("/inventario")
 @RequiredArgsConstructor
+@Slf4j
 public class InventarioController {
 
     private final ProductoService productoService;

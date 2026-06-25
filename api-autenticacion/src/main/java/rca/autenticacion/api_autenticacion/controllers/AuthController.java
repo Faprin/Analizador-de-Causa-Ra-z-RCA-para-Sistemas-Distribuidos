@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import rca.autenticacion.api_autenticacion.models.UserEntity;
 import rca.autenticacion.api_autenticacion.payload.AuthRequest;
 import rca.autenticacion.api_autenticacion.payload.AuthResponse;
@@ -21,6 +22,7 @@ import rca.autenticacion.api_autenticacion.services.JwtService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
     private final JwtService jwtService;
