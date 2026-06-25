@@ -1,0 +1,90 @@
+services:
+
+  # ========================
+  #   PEDIDOS
+  # ========================
+  api-pedidos:
+    image: servicio-pedidos:1
+    build: ./api-pedidos
+    ports:
+      - 8081:8081
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-pedidos:5432/pedidos_db
+      - SPRING_DATASOURCE_USERNAME=admin_pedidos
+      - SPRING_DATASOURCE_PASSWORD=secreto123
+    env_file:
+      - ./api-pedidos/.env
+    depends_on:
+      - postgres-pedidos
+
+  postgres-pedidos:
+    image: postgres:15
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=admin_pedidos
+      - POSTGRES_PASSWORD=secreto123
+      - POSTGRES_DB=pedidos_db
+    volumes:
+      - postgres_pedidos_data:/var/lib/postgresql/data
+
+  # ========================
+  #   INVENTARIO
+  # ========================
+  api-inventario:
+    image: servicio-inventario:1
+    build: ./api-inventario
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-inventario:5432/inventario_db
+      - SPRING_DATASOURCE_USERNAME=admin_inventario
+      - SPRING_DATASOURCE_PASSWORD=secreto123
+    env_file:
+      - ./api-inventario/.env
+    depends_on:
+      - postgres-inventario
+
+  postgres-inventario:
+    image: postgres:15
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=admin_inventario
+      - POSTGRES_PASSWORD=secreto123
+      - POSTGRES_DB=inventario_db
+    volumes:
+      - postgres_inventario_data:/var/lib/postgresql/data
+
+  # ========================
+  #   AUTENTICACION
+  # ========================
+  api-autenticacion:
+    image: servicio-autenticacion:1
+    build: ./api-autenticacion
+    ports:
+      - 8082:8082
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-autenticacion:5432/autenticacion_db
+      - SPRING_DATASOURCE_USERNAME=admin_autenticacion
+      - SPRING_DATASOURCE_PASSWORD=secreto123
+    env_file:
+    - ./api-autenticacion/.env
+    depends_on:
+      - postgres-autenticacion
+
+  postgres-autenticacion:
+    image: postgres:15
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=admin_autenticacion
+      - POSTGRES_PASSWORD=secreto123
+      - POSTGRES_DB=autenticacion_db
+    volumes:
+      - postgres_autenticacion_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_pedidos_data:
+  postgres_inventario_data:
+  postgres_autenticacion_data:

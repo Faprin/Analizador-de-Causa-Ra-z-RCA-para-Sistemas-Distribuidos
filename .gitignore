@@ -1,0 +1,74 @@
+# =========================================
+# SISTEMA OPERATIVO Y EDITORES (macOS, VS Code, IntelliJ)
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Thumbs.db
+
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.swp
+.classpath
+.project
+.settings/
+
+# ==========================================
+# JAVA / MAVEN (Microservicios)
+# ==========================================
+**/target/
+**/*.jar
+**/*.war
+**/*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de log y temporales de Spring Boot
+**/logs/
+**/*.log
+**/tmp/
+
+# ==========================================
+# PYTHON / MACHINE LEARNING (Módulo de IA)
+# ==========================================
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+.pytest_cache/
+.htmlcov/
+.tox/
+.coverage
+
+# Entornos virtuales de Python
+**/.venv/
+**/venv/
+**/env/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+
+**/.ipynb_checkpoints/
+
+# DATASETS Y MODELOS PESADOS
+**/data/
+**/datasets/
+**/*.pt
+**/*.pth
+**/*.pkl
+**/*.h5
+**/*.onnx
+**/*.joblib
+
+# ==========================================
+# DOCKER, BASES DE DATOS Y SECRETOS
+# ==========================================
+**/postgres-data/
+**/pgdata/
+**/db-data/
+
+.env
+**/.env
+**/application-local.properties
