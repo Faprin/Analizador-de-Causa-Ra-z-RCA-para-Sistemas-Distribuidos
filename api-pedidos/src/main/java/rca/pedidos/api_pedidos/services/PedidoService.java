@@ -1,5 +1,6 @@
 package rca.pedidos.api_pedidos.services;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import java.util.List;
 
@@ -15,19 +16,11 @@ import rca.pedidos.api_pedidos.repository.PedidoRepository;
 
 @Service
 @Validated
+@AllArgsConstructor
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final RestClient restClient;
-
-    public PedidoService(PedidoRepository repository) {
-
-        this.pedidoRepository = repository;
-
-        this.restClient = RestClient.builder()
-            .baseUrl("http://api-inventario:8080/inventario")
-            .build();
-    }
 
     public List<Pedido> obtenerTodosLosPedidos() {
         return pedidoRepository.findAll();
