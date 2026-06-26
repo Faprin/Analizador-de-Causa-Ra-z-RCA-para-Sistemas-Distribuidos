@@ -2,6 +2,8 @@ package rca.inventario.api_inventario.controllers;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,20 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import rca.inventario.api_inventario.models.Producto;
 import rca.inventario.api_inventario.services.ProductoService;
 
 @RestController
 @RequestMapping("/inventario")
 @RequiredArgsConstructor
-@Slf4j
 public class InventarioController {
 
     private final ProductoService productoService;
+    private static final Logger log = LoggerFactory.getLogger(InventarioController.class);
 
     @GetMapping
     public List<Producto> obtenerTodosLosProductos() {
+        System.out.println(">>> PRUEBA CON SYSTEM OUT <<<"); // Prueba de fuego
+        log.info(">>> PRUEBA CON LOGGER JSON <<<");
         return productoService.obtenerTodosLosProductos();
     }
 
