@@ -16,6 +16,8 @@ services:
       - ./api-pedidos/.env
     depends_on:
       - postgres-pedidos
+    networks:
+      - rca-net
 
   postgres-pedidos:
     image: postgres:15
@@ -25,6 +27,8 @@ services:
       - POSTGRES_USER=admin_pedidos
       - POSTGRES_PASSWORD=secreto123
       - POSTGRES_DB=pedidos_db
+    networks:
+      - rca-net
     volumes:
       - postgres_pedidos_data:/var/lib/postgresql/data
 
@@ -44,6 +48,8 @@ services:
       - ./api-inventario/.env
     depends_on:
       - postgres-inventario
+    networks:
+      - rca-net
 
   postgres-inventario:
     image: postgres:15
@@ -53,6 +59,8 @@ services:
       - POSTGRES_USER=admin_inventario
       - POSTGRES_PASSWORD=secreto123
       - POSTGRES_DB=inventario_db
+    networks:
+      - rca-net
     volumes:
       - postgres_inventario_data:/var/lib/postgresql/data
 
@@ -72,6 +80,8 @@ services:
     - ./api-autenticacion/.env
     depends_on:
       - postgres-autenticacion
+    networks:
+      - rca-net
 
   postgres-autenticacion:
     image: postgres:15
@@ -81,10 +91,46 @@ services:
       - POSTGRES_USER=admin_autenticacion
       - POSTGRES_PASSWORD=secreto123
       - POSTGRES_DB=autenticacion_db
+    networks:
+      - rca-net
     volumes:
       - postgres_autenticacion_data:/var/lib/postgresql/data
+    
+  # ========================
+  #   STACK PLG
+  # ========================
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: promtail_collector
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail/config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro 
+      - promtail_data:/tmp/positions
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - rca-net
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki_central
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml 
+      - loki_data:/loki
+    networks:
+      - rca-net
 
 volumes:
   postgres_pedidos_data:
   postgres_inventario_data:
   postgres_autenticacion_data:
+  loki_data:
+  promtail_data:
+
+networks:
+  rca-net:
+    driver: bridge
