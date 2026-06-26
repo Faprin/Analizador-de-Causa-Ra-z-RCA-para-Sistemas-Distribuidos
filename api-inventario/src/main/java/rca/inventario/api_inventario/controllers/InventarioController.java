@@ -2,6 +2,7 @@ package rca.inventario.api_inventario.controllers;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,9 @@ import rca.inventario.api_inventario.services.ProductoService;
 public class InventarioController {
 
     private final ProductoService productoService;
-    private static final Logger log = LoggerFactory.getLogger(InventarioController.class);
 
     @GetMapping
     public List<Producto> obtenerTodosLosProductos() {
-        System.out.println(">>> PRUEBA CON SYSTEM OUT <<<"); // Prueba de fuego
-        log.info(">>> PRUEBA CON LOGGER JSON <<<");
         return productoService.obtenerTodosLosProductos();
     }
 
