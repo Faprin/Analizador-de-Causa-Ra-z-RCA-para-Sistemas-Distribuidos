@@ -7,7 +7,7 @@ services:
     image: servicio-pedidos:1
     build: ./api-pedidos
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-pedidos:5432/pedidos_db
       - SPRING_DATASOURCE_USERNAME=admin_pedidos
@@ -16,13 +16,16 @@ services:
       - ./api-pedidos/.env
     depends_on:
       - postgres-pedidos
+    labels:
+      logging: "enabled"
+      service_name: "api-pedidos"
     networks:
       - rca-net
 
   postgres-pedidos:
     image: postgres:15
     ports:
-      - 5433:5432
+      - "5433:5432"
     environment:
       - POSTGRES_USER=admin_pedidos
       - POSTGRES_PASSWORD=secreto123
@@ -39,7 +42,7 @@ services:
     image: servicio-inventario:1
     build: ./api-inventario
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-inventario:5432/inventario_db
       - SPRING_DATASOURCE_USERNAME=admin_inventario
@@ -48,13 +51,16 @@ services:
       - ./api-inventario/.env
     depends_on:
       - postgres-inventario
+    labels:
+      logging: "enabled"
+      service_name: "api-inventario"
     networks:
       - rca-net
 
   postgres-inventario:
     image: postgres:15
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_USER=admin_inventario
       - POSTGRES_PASSWORD=secreto123
@@ -71,22 +77,25 @@ services:
     image: servicio-autenticacion:1
     build: ./api-autenticacion
     ports:
-      - 8082:8082
+      - "8082:8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-autenticacion:5432/autenticacion_db
       - SPRING_DATASOURCE_USERNAME=admin_autenticacion
       - SPRING_DATASOURCE_PASSWORD=secreto123
     env_file:
-    - ./api-autenticacion/.env
+      - ./api-autenticacion/.env
     depends_on:
       - postgres-autenticacion
+    labels:
+      logging: "enabled"
+      service_name: "api-autenticacion"
     networks:
       - rca-net
 
   postgres-autenticacion:
     image: postgres:15
     ports:
-      - 5434:5432
+      - "5434:5432"
     environment:
       - POSTGRES_USER=admin_autenticacion
       - POSTGRES_PASSWORD=secreto123
@@ -95,42 +104,62 @@ services:
       - rca-net
     volumes:
       - postgres_autenticacion_data:/var/lib/postgresql/data
-    
+
   # ========================
   #   STACK PLG
   # ========================
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml
+      - loki_data:/loki
+    networks:
+      - rca-net
+
   promtail:
     image: grafana/promtail:2.9.2
     container_name: promtail_collector
     volumes:
       - ./promtail-config.yaml:/etc/promtail/config.yaml
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro 
-      - promtail_data:/tmp/positions
+      - /var/run/docker.sock:/var/run/docker.sock
+      - promtail_positions:/tmp
     command: -config.file=/etc/promtail/config.yaml
+    user: root
     networks:
       - rca-net
     depends_on:
       - loki
 
-  loki:
-    image: grafana/loki:2.9.2
-    container_name: loki_central
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: grafana
     ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    volumes:
-      - ./loki-config.yaml:/etc/loki/local-config.yaml 
-      - loki_data:/loki
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     networks:
       - rca-net
+    depends_on:
+      - loki
 
+# ========================
+#   VOLUMES
+# ========================
 volumes:
   postgres_pedidos_data:
   postgres_inventario_data:
   postgres_autenticacion_data:
   loki_data:
-  promtail_data:
+  promtail_positions:
 
+# ========================
+#   NETWORKS
+# ========================
 networks:
   rca-net:
     driver: bridge
