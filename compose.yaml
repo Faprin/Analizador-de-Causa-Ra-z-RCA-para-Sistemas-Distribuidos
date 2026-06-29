@@ -125,7 +125,7 @@ services:
     container_name: promtail_collector
     volumes:
       - ./promtail-config.yaml:/etc/promtail/config.yaml
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/faprin/.orbstack/run/docker.sock:/var/run/docker.sock
       - promtail_positions:/tmp
     command: -config.file=/etc/promtail/config.yaml
     user: root
