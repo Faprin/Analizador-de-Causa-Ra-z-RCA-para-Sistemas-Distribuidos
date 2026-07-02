@@ -72,3 +72,4 @@
 .env
 **/.env
 **/application-local.properties
+ml-predictions/ClearSolution.ipynb
