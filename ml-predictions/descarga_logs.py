@@ -25,7 +25,7 @@ def descargar(horas_atras = 24, limite = 5000):
     start = int(inicio.timestamp() * 1e9)
     end = int(tiempo_actual.timestamp() * 1e9)
 
-    response = requests.post(
+    response = requests.get(
         f"{LOKI_URL}/loki/api/v1/query_range",
         params={
             "query": '{service=~"api-inventario|api-pedidos|api-autenticacion"}',
@@ -66,13 +66,13 @@ def log_a_dataframe(logs):
         "traceId"
     ]
 
-    columnas_presentes = [c for c in columnas if c in df.colums]
+    columnas_presentes = [c for c in columnas if c in df.columns]
     df = df[columnas_presentes]
 
     if "duration_ms" in df.columns:
         df["duration_ms"] = pd.to_numeric(df["duration_ms"], errors = "coerce")
     if "http_status" in df.columns:
-        df["http_status"] = pd.to_numeric(df["http_status"], error = "coerce")
+        df["http_status"] = pd.to_numeric(df["http_status"], errors = "coerce")
     
     return df
 
