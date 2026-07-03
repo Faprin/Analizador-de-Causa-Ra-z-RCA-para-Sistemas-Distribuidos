@@ -66,7 +66,7 @@ def log_a_dataframe(logs):
         "traceId"
     ]
 
-    columnas_presentes = [c for c in columnas if c in df.colums]
+    columnas_presentes = [c for c in columnas if c in df.columns]
     df = df[columnas_presentes]
 
     if "duration_ms" in df.columns:
