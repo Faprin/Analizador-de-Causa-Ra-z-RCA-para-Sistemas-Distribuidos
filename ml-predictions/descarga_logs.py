@@ -19,7 +19,7 @@ CSV_PATH  = os.path.join(OUTPUT_DIR, "logs_dataset.csv")
 # =========================
 def descargar(horas_atras = 24, limite = 5000):
 
-    tiempo_actual = datetime.utcnow()
+    tiempo_actual = datetime.now()
     inicio = tiempo_actual - timedelta(hours = horas_atras)
 
     start = int(inicio.timestamp() * 1e9)
