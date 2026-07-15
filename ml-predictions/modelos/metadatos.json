@@ -1,0 +1,31 @@
+{
+  "best_params": {
+    "model__contamination": "auto",
+    "model__n_estimators": 200,
+    "preprocessor__text_processor__vectorizador__max_df": 0.7,
+    "preprocessor__text_processor__vectorizador__max_features": 30,
+    "preprocessor__text_processor__vectorizador__min_df": 1,
+    "preprocessor__text_processor__vectorizador__ngram_range": [
+      1,
+      2
+    ]
+  },
+  "best_score": 0.8478945532668576,
+  "features": [
+    "traceId",
+    "level",
+    "event_type",
+    "http_method",
+    "duration_ms",
+    "error_origin",
+    "log_count",
+    "texto_completo",
+    "tiene_error_5xx",
+    "duracion_relativa",
+    "is_cascada"
+  ],
+  "fecha_entreno": "2026-07-15T11:16:09.859114",
+  "n_train": 3031,
+  "n_test": 758,
+  "contaminacion": "auto"
+}
