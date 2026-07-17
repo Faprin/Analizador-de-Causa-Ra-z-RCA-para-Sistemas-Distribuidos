@@ -19,7 +19,7 @@ class RCAModel:
             self.metadata = json.load(f)
         
         print(f"Modelo cargado: {self.metadata['fecha_entreno']}")
-        print(f"Features: {self.metadata['features']}")
+        # print(f"Features: {self.metadata['features']}")
         return self
 
     def predict(self, df: pd.DataFrame) -> pd.Series:
@@ -38,3 +38,5 @@ class RCAModel:
         anomalias = resultado[resultado["prediction"] == -1].copy()
         anomalias = anomalias.sort_values("anomaly_score")
         return anomalias
+
+rca_model = RCAModel()
