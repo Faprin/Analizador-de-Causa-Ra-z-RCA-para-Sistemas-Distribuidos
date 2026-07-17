@@ -1,33 +1,33 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from contextlib import asynccontextmanager
 import pandas as pd
 
 from features import clean
 from model import rca_model
 
-app = FastAPI()
-
 # ============================
 # CLASES AUXILIARES
 # ============================
 class Log(BaseModel):
-    timestamp: str
+    model_config = {"extra": "ignore", "populate_by_name": True}
+    
+    timestamp: str = Field(None, alias = "@timestamp")
     service: str
     level: str
     event_type: Optional[str] = None
     outcome: Optional[str] = None
     http_method: Optional[str] = None
     http_uri: Optional[str] = None
-    http_status: Optional[float] = None
-    duration_ms: Optional[float] = None
+    http_status: Optional[str] = None
+    duration_ms: Optional[str] = None
     error_type: Optional[str] = None
     error_message: Optional[str] = None
     error_origin: Optional[str] = None
     traceId: Optional[str] = None
 
-class LogBatch:
+class LogBatch(BaseModel):
     logs: list[Log]
 
 # ============================
@@ -71,7 +71,7 @@ def predict(batch: LogBatch):
     if not batch.logs:
         raise HTTPException(status_code=400, detail="No se han recibido logs en la peticion")
     
-    df_raw = pd.DataFrame([log.model_dump() for log in batch.logs])
+    df_raw = pd.DataFrame([log.model_dump(by_alias=True) for log in batch.logs])
     df_raw = df_raw.rename(columns={"timestamp": "@timestamp"})
 
     try:
