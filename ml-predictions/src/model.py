@@ -6,7 +6,7 @@ import pandas as pd
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "../modelos")
 BEST_MODEL_NAME = "01_isolation_forest"
 
-class RCAmodel:
+class RCAModel:
 
     def __init__(self):
         self.model = None
