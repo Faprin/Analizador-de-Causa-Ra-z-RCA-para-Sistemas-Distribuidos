@@ -51,7 +51,7 @@ def marcar_cascada(df):
 # FUNCIONES TRANSFORMADORAS
 # =========================
 
-def features_geneartor(df, baseline=None):
+def features_geneartor(df):
     # 1. LOG COUNT
     df['log_count'] = df.groupby(['traceId', 'service'])['traceId'].transform('count')
 
@@ -75,7 +75,7 @@ def features_geneartor(df, baseline=None):
     # 5. CASCADA
     df = marcar_cascada(df)
 
-    return df, baseline
+    return df
 
 
 def logs_unifier(df):
@@ -137,7 +137,7 @@ def col_remover(df):
 #   FUNCION PRINCIPAL
 # =========================
 
-def clean(df_raw, baseline=None):
+def clean(df_raw):
 
     df = df_raw.copy()
 
@@ -146,7 +146,7 @@ def clean(df_raw, baseline=None):
 
     df = fill_na(df)
     df = logs_unifier(df)
-    df, baseline = features_geneartor(df, baseline)
+    df = features_geneartor(df)
     df = col_remover(df)
 
-    return df, baseline
+    return df
