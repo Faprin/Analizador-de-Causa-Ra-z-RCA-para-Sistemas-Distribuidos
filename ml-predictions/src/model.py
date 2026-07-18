@@ -22,9 +22,19 @@ class RCAModel:
         # print(f"Features: {self.metadata['features']}")
         return self
 
-    def predict(self, df: pd.DataFrame) -> pd.Series:
-        pred = self.model.predict(df)
-        return pd.Series(pred, index=df, name='prediction')
+    def predict(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = df.drop(columns=["es_anomalia"])
+        y_pred = self.model.predict(df)
+        # scores = self.model.decesion_function(df)
+
+        r = df.copy()
+        r["predict"] = y_pred
+        #r["anomaly_score"] = scores
+
+        anomalias = r[r["predict"] == -1].copy()
+        # anomalias = anomalias.sort_values("anomaly_score")
+
+        return anomalias
     
     def score(self, df: pd.DataFrame) -> pd.Series:
         scores = self.model.decision_function(df)

@@ -52,9 +52,6 @@ def marcar_cascada(df):
 # =========================
 
 def features_geneartor(df):
-    # 1. LOG COUNT
-    df['log_count'] = df.groupby(['traceId', 'service'])['traceId'].transform('count')
-
     # 2. ERROR 5XX
     df['tiene_error_5xx'] = df['http_status'].astype(str).str.contains(r'5\d{2}').astype(int)
     
@@ -79,6 +76,9 @@ def features_geneartor(df):
 
 
 def logs_unifier(df):
+    # Calculamos primero los logs cuyo traceid y service son iguales
+    df['log_count'] = df.groupby(['traceId', 'service'])['traceId'].transform('count')
+
     # Asegurarnos de que el dataframe esté ordenado por tiempo
     df = df.sort_values(by=['@timestamp'])
 
@@ -118,21 +118,23 @@ def fill_na(df):
     df['error_message'] = df['error_message'].fillna('X')
     df['error_type'] = df['error_type'].fillna('X')
     df['error_origin']  = df['error_origin'].fillna('X')
-    
-    df["texto_completo"] = (
-    df["error_type"].apply(limpiar_texto) + " " +
-    df["error_message"].apply(limpiar_texto) + " " +
-    df["error_origin"].apply(limpiar_texto)
-    )
 
     return df
 
 def col_remover(df):
     df = df.drop(columns=["outcome", "http_uri", "error_type",
                           "error_message", "@timestamp", "service", 
-                          "level_final"])
+                          "level_final"], errors='ignore')
     return df
 
+def text_builder(df):
+    df["texto_completo"] = (
+        df["error_type"].apply(limpiar_texto) + " " +
+        df["error_message"].apply(limpiar_texto) + " " +
+        df["error_origin"].apply(limpiar_texto)
+    )
+
+    return df
 # =========================
 #   FUNCION PRINCIPAL
 # =========================
@@ -143,10 +145,15 @@ def clean(df_raw):
 
     df = df.dropna(subset=["event_type", "duration_ms"], how="all")
     df = df[~df["http_uri"].str.contains("/chaos/", na=False)]
+    df["duration_ms"] = pd.to_numeric(df["duration_ms"], errors="coerce")
+    df["http_status"] = pd.to_numeric(df["http_status"], errors="coerce")
 
     df = fill_na(df)
     df = logs_unifier(df)
+    df = text_builder(df)
     df = features_geneartor(df)
     df = col_remover(df)
+
+    print(df[["texto_completo"]].head(10))
 
     return df

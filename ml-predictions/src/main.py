@@ -77,6 +77,7 @@ def predict(batch: LogBatch):
     try:
         df_clean = clean(df_raw)
     except Exception as e:
+        print(str(e))
         raise HTTPException(status_code=422, detail=f'Error en la transofrmacion de los datos: {str(e)}')
     
     if df_clean.empty:
