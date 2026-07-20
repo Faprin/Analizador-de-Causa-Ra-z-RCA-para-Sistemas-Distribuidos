@@ -99,18 +99,49 @@ def predict(batch: LogBatch):
     }
 
 @app.get("/analize")
-async def analize():
+async def analize(horas: int = 1):
     """
     COnsulta directamente loki, procesa y analiza las anomalias y las devuelve.
     No hace falta enviar nada en el cuerpo de la peticion
     """
 
-    df_raw = 
+    df_raw = loki_download(horas_atras=horas)
+
+    if df_raw.empty:
+        return {
+            "anomalias": [],
+            "total_analizadas": 0,
+            "message": "No se han encontrado registros para analizar"
+        }
+    
+    try:
+        df_clean = clean(df_raw)
+
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Error en la transformacion de datos {str(e)}")
+
+    if df_clean.empty:
+        return {
+            "anomalias": [],
+            "total_analizadas": 0,
+            "message": "No se han encontrado registros para analizar"
+        }
+    
+    anomalias = rca_model.predict(df_clean)
+
+    return {
+        "total_analizado": len(df_clean),
+        "total_anomalias": len(anomalias),
+        "anomalias": anomalias.to_dict(orient="records")
+    }
+
+
+
 
 # ============================
 # FUNCIONES AUXILIARES  
 # ============================
-def loki_download(horas_atras: int = 24, limite: int = 1000):
+def loki_download(horas_atras: int = 1, limite: int = 1000):
 
     tiempo_actual = datetime.now()
     inicio = tiempo_actual - timedelta(hours = horas_atras)
