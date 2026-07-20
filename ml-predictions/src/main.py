@@ -87,9 +87,10 @@ def predict(batch: LogBatch):
         }
     
     anomalias = rca_model.predict(df_clean)
+    anomalias = anomalias.replace([float('inf'), float('-inf')], None).fillna(0)
 
     return {
-        "total_analizado": len(df_clean),
-        "total_anomalias": len(anomalias),
+        "total_analizado": str(len(df_clean)),
+        "total_anomalias": str(len(anomalias)),
         "anomalias": anomalias.to_dict(orient="records")
     }

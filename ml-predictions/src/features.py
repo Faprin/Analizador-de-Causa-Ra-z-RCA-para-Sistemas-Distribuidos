@@ -59,7 +59,7 @@ def features_geneartor(df):
     df['es_anomalia'] = df.apply(etiquetado, axis=1)
 
     # 4. TEXTO COMPLETO
-    df['texto_completo'] = df['error_type'] + " " + df['error_message']
+    # df['texto_completo'] = df['error_type'] + " " + df['error_message']
 
     # 5. DURACION RELATIVA
     baseline = get_duracion_relativa(df)
@@ -98,7 +98,7 @@ def logs_unifier(df):
         'event_type': lambda x: ', '.join(x.dropna().astype(str).unique()),
         'http_method': 'first',
         'http_status': lambda x: ', '.join(x.dropna().astype(str).unique()),
-        'duration_ms': 'sum', 
+        'duration_ms': 'max', 
         'error_type': lambda x: ' | '.join(x.dropna().astype(str).unique()),
         'error_message': lambda x: ' | '.join(x.dropna().astype(str).unique()),
         'error_origin': lambda x: ' | '.join(x.dropna().astype(str).unique()),
@@ -110,6 +110,13 @@ def logs_unifier(df):
 
     # ARREGLAMOS EL PROBMELA DE LVEL MULTIPLE
     df_clear['level'] = df_clear['level'].apply(max_level)
+
+    mediana = df_clear['duration_ms'].median()
+    df_clear['duration_ms'] = df_clear['duration_ms'].fillna(mediana)
+
+    # Rellena http_method y http_status vacíos
+    df_clear['http_method'] = df_clear['http_method'].fillna('UNKNOWN')
+    df_clear['http_status'] = df_clear['http_status'].fillna('0')
 
     return df_clear
 
