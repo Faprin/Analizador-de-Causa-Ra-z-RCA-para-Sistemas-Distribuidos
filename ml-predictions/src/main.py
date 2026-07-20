@@ -3,9 +3,14 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from contextlib import asynccontextmanager
 import pandas as pd
+import requests
+from datetime import datetime, timedelta
+import json
 
 from features import clean
 from model import rca_model
+
+LOKI_URL = "http://localhost:3100"
 
 # ============================
 # CLASES AUXILIARES
@@ -92,3 +97,52 @@ def predict(batch: LogBatch):
         "total_anomalias": len(anomalias),
         "anomalias": anomalias.to_dict(orient="records")
     }
+
+@app.get("/analize")
+async def analize():
+    """
+    COnsulta directamente loki, procesa y analiza las anomalias y las devuelve.
+    No hace falta enviar nada en el cuerpo de la peticion
+    """
+
+    df_raw = 
+
+# ============================
+# FUNCIONES AUXILIARES  
+# ============================
+def loki_download(horas_atras: int = 24, limite: int = 1000):
+
+    tiempo_actual = datetime.now()
+    inicio = tiempo_actual - timedelta(hours = horas_atras)
+
+    start = int(inicio.timestamp() * 1e9)
+    end = int(tiempo_actual.timestamp() * 1e9)
+
+    try:
+        response = requests.get(
+            f"{LOKI_URL}/loki/api/v1/query_range",
+            params={
+                "query": '{service=~"api-inventario|api-pedidos|api-autenticacion"}',
+                "start": start,
+                "end":   end,
+                "limit": limite,
+                "direction": "forward"
+            }
+        )
+        response.raise_for_status()
+    
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=503, detail=f"Error en la descarga de loki: {str(e)}")
+
+    registros = []
+    for stream in response.json().get("data", {}).get("result", []):
+        servicio = stream["stream"].get("service", "unknown")
+        for _, linea in stream["values"]:
+            try:
+                log = json.loads(linea)
+                log["service"] = servicio
+                registros.append(log)
+            except json.JSONDecodeError:
+                pass
+
+    return pd.DataFrame(registros) if registros else pd.DataFrame()
