@@ -161,6 +161,4 @@ def clean(df_raw):
     df = features_geneartor(df)
     df = col_remover(df)
 
-    print(df[["texto_completo"]].head(10))
-
     return df

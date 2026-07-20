@@ -82,7 +82,6 @@ def predict(batch: LogBatch):
     try:
         df_clean = clean(df_raw)
     except Exception as e:
-        print(str(e))
         raise HTTPException(status_code=422, detail=f'Error en la transofrmacion de los datos: {str(e)}')
     
     if df_clean.empty:
@@ -101,13 +100,13 @@ def predict(batch: LogBatch):
     }
 
 @app.get("/analize")
-async def analize(horas: int = 1):
+async def analize(horas: int = 1, limite : int = 1000):
     """
     COnsulta directamente loki, procesa y analiza las anomalias y las devuelve.
     No hace falta enviar nada en el cuerpo de la peticion
     """
 
-    df_raw = loki_download(horas_atras=horas)
+    df_raw = loki_download(horas_atras=horas, limite=limite)
 
     if df_raw.empty:
         return {
@@ -138,6 +137,32 @@ async def analize(horas: int = 1):
     }
 
 
+@app.get("/summary")
+def summary(horas: int = 1, limite: int = 1000):
+    """
+    Devuelve un resumen ejecutivo para el panel:
+    qué servicios tienen anomalías y cuántas.
+    """
+    df_raw = loki_download(horas_atras=horas, limite=2000)
+
+    if df_raw.empty:
+        return {"servicios": {}, "total_anomalias": 0}
+
+    df_clean = clean(df_raw)
+    anomalias = rca_model.predict(df_clean)
+
+    # Agrupa por servicio
+    if "service" in anomalias.columns:
+        por_servicio = anomalias.groupby("service").size().to_dict()
+    else:
+        por_servicio = {}
+
+    return {
+        "total_analizados": len(df_clean),
+        "total_anomalias":  len(anomalias),
+        "por_servicio":     por_servicio,
+        "rango_horas":      horas
+    }
 
 
 # ============================
