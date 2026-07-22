@@ -170,6 +170,6 @@ python dataset_generator.py
 |---|---|---|
 | 1 — Infraestructura | Microservicios Spring Boot con logs estructurados y trazabilidad distribuida | ✅ Completada |
 | 2 — Chaos Engineering | Inyección de fallos, stack PLG y generación del dataset | ✅ Completada |
-| 3 — Motor Analítico | FastAPI + Isolation Forest / DBSCAN para detección de anomalías | 🔄 En desarrollo |
-| 4 — Visualización | Panel Angular/Astro con alertas en tiempo real | ⏳ Pendiente |
+| 3 — Motor Analítico | FastAPI + Isolation Forest para detección de anomalías | 🔄 En desarrollo |
+| 4 — Visualización | Panel Astro con alertas en tiempo real | ⏳ Pendiente |
 | 5 — GenAI / RAG | Informes post-mortem automáticos con LLM | 📋 Planificado |
