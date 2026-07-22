@@ -10,7 +10,13 @@ import json
 from features import clean
 from model import rca_model
 
-LOKI_URL = "http://localhost:3100"
+LOKI_URL = "http://loki:3100"
+
+DF_COLS = [
+    "@timestamp", "service", "level", "event_type", "outcome", 
+    "http_method", "http_uri", "http_status", "duration_ms", 
+    "error_type", "error_message", "error_origin", "traceId"
+]
 
 # ============================
 # CLASES AUXILIARES
@@ -114,6 +120,8 @@ async def analize(horas: int = 1, limite : int = 1000):
             "total_analizadas": 0,
             "message": "No se han encontrado registros para analizar"
         }
+
+    df_raw = df_raw.reindex(columns=DF_COLS)
     
     try:
         df_clean = clean(df_raw)

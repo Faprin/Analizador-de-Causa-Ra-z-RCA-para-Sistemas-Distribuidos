@@ -3,7 +3,7 @@ import os
 import json
 import pandas as pd
 
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "../modelos")
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "modelos")
 BEST_MODEL_NAME = "01_isolation_forest"
 
 class RCAModel:

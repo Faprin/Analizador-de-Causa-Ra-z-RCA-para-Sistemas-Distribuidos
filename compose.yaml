@@ -105,6 +105,25 @@ services:
     volumes:
       - postgres_autenticacion_data:/var/lib/postgresql/data
 
+
+  # ========================
+  #   ISOLATION BACKEND
+  # ========================
+  isolation-backend:
+    build: 
+      context: ./ml-predictions/src
+      dockerfile: Dockerfile
+    container_name: rca-isolation
+    ports:
+      - "8000:8000"
+    environment:
+      - LOKI_URL=http://loki:3100
+    depends_on:
+      - loki
+    networks:
+      - rca-net
+
+
   # ========================
   #   STACK PLG
   # ========================
