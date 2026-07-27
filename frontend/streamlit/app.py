@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-FASTAPI_URL = "http://localhost:8000/analize" 
+FASTAPI_URL = "http://isolation-backend:8000/analize" 
 
 st.title("🔍 Analizador de Causa Raíz (RCA)")
 st.markdown("Monitor de anomalías en tiempo real usando Isolation Forest.")
@@ -74,7 +74,7 @@ if datos_api:
         
         columnas_deseadas = [
             'traceId', 'level', 'event_type', 'http_status', 
-            'duration_ms', 'tiene_error_5xx', 'predict'
+            'duration_ms', 'tiene_error_5xx'
         ]
         
         columnas_a_mostrar = [col for col in columnas_deseadas if col in df_anomalias.columns]
