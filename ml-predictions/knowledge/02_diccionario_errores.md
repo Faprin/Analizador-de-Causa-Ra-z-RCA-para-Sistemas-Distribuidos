@@ -46,7 +46,7 @@ Cada error genera dos logs vinculados por el mismo `traceId`:
 - **Servicio afectado:** api-pedidos
 - **Causa raíz:** api-inventario no responde en menos de 5000ms
 - **Por qué ocurre:** El pool de conexiones de postgres-inventario está saturado
-  (generalmente por el endpoint de Chaos `/chaos/db-saturate`) o la BD está bajo
+o la BD está bajo
   alta carga de escritura concurrente.
 - **Patrón en logs:** Mismo `traceId` en api-pedidos (timeout) y en api-inventario
   (`duration_ms` > 29000ms, `event_type: SERVER_ERROR`)
@@ -60,8 +60,6 @@ Cada error genera dos logs vinculados por el mismo `traceId`:
 - **Servicio afectado:** Cualquiera (api-pedidos, api-inventario, api-autenticacion)
 - **Causa raíz:** La base de datos PostgreSQL del servicio no está disponible
   o el pool de conexiones HikariCP está completamente agotado.
-- **Por qué ocurre en desarrollo:** El endpoint `/chaos/db-saturate` agota
-  intencionalmente todas las conexiones del pool (10 por defecto en HikariCP).
 - **Patrón en logs:** `error_origin` apunta a una clase de repositorio o servicio
   que intenta hacer una query. `duration_ms` suele ser muy alto (> 30000ms).
 - **Servicio a inspeccionar primero:** El propio servicio que lanza la excepción.
@@ -85,12 +83,11 @@ Cada error genera dos logs vinculados por el mismo `traceId`:
 ### NullPointerException
 
 - **Servicio afectado:** api-inventario (generalmente)
-- **Causa raíz en desarrollo:** Inyectada intencionalmente por `/chaos/error?type=npe`
 - **Causa raíz en producción:** Campo nulo no validado, generalmente un producto
   con campos opcionales mal gestionados o una respuesta de BD inesperada.
 - **Patrón en logs:** `error_type: NullPointerException`, `error_origin` muestra
   la línea exacta del código donde ocurre.
-- **Mitigación:** Revisar la línea indicada en `error_origin`. Si es chaos, ignorar.
+- **Mitigación:** Revisar la línea indicada en `error_origin`.
 
 ---
 
@@ -122,7 +119,6 @@ Cada error genera dos logs vinculados por el mismo `traceId`:
 ```
 Secuencia de eventos (mismo traceId):
 
-T+0ms    api-inventario recibe POST /chaos/db-saturate → pool agotado
 T+1000ms api-pedidos recibe POST /pedidos
 T+1000ms api-pedidos llama a api-inventario → espera respuesta
 T+6000ms api-pedidos lanza ResourceAccessException (timeout 5000ms)
@@ -143,7 +139,6 @@ alto (29014ms) en inventario confirma que la BD estaba bloqueada.
 ```
 Secuencia de eventos (mismo traceId):
 
-T+0ms   api-inventario recibe POST /chaos/error?type=db
 T+0ms   api-inventario lanza RuntimeException → devuelve HTTP 500
 T+1ms   api-pedidos recibe POST /pedidos
 T+1ms   api-pedidos llama a api-inventario → recibe HTTP 500

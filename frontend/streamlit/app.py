@@ -74,7 +74,7 @@ if datos_api:
         
         columnas_deseadas = [
             'traceId', 'level', 'event_type', 'http_status', 
-            'duration_ms', 'tiene_error_5xx'
+            'duration_ms', 'tiene_error_5xx', 'service'
         ]
         
         columnas_a_mostrar = [col for col in columnas_deseadas if col in df_anomalias.columns]

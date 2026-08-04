@@ -56,12 +56,6 @@ postgres-autenticacion (5434)
 - **Señal de fallo:** Si `POST /inventario/{id}/retirar` supera 1000ms, es síntoma
   de contención en la BD (bloqueos de fila por stock concurrente o pool saturado).
 
-### Endpoints de Chaos Engineering (solo entorno de desarrollo)
-- `POST /chaos/db-saturate?segundos=N` — agota el pool de conexiones de PostgreSQL
-- `POST /chaos/error?type=npe` — lanza NullPointerException controlada
-- `POST /chaos/error?type=db` — lanza RuntimeException simulando error de BD
-- `POST /chaos/error?type=timeout` — lanza RuntimeException simulando timeout
-
 ---
 
 ## Microservicio: api-pedidos
