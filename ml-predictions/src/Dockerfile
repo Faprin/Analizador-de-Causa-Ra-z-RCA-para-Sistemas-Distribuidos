@@ -6,6 +6,8 @@ COPY requirements.txt .
 
 COPY /modelos ./modelos/
 
+COPY /vectorstore ./vectorstore
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .

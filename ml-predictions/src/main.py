@@ -9,6 +9,7 @@ import json
 
 from features import clean
 from model import rca_model
+from rag_engine import RAG
 
 LOKI_URL = "http://loki:3100"
 
@@ -47,10 +48,14 @@ class LogBatch(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # cargar el modelo
-    print("[*] Cargando el modelo...")
+    print("[*] Cargando ISOLATION...")
     rca_model.load_model()
-    print("[*] Modelo cargado correctamente")
+    print("[*] ISOLATION cargado correctamente")
 
+    print("[*] Cargando RAG engine")
+    rag = RAG()
+    print("[*] RAG engine cargada correctamente")
+    
     # ejecucion del contexto
     yield
 

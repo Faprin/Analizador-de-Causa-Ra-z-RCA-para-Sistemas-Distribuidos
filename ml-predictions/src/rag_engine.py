@@ -4,9 +4,9 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+import os
 
-FAISS_PATH='../vectorstore/faiss_index'
-
+FAISS_PATH = os.path.join(os.path.dirname(__file__), "vectorstore/faiss_index")
 template = """
     Eres un Ingeniero SRE (Site Reliability Engineer) y Experto Forense de Nivel 3. 
     Tu especialidad es diagnosticar fallos en cascada en una arquitectura de microservicios Spring Boot (api-pedidos, api-inventario, api-autenticacion).
@@ -36,7 +36,7 @@ template = """
 """
 
 class RAG:
-    def __init__(self, vectorstore_path):
+    def __init__(self):
 
         # inicializacion del modelo 
         self.llm = ChatOllama(
@@ -73,7 +73,7 @@ class RAG:
             | StrOutputParser
         )
 
-        print("[SYSTEM] Motor RAG cargado")
+        print("[RAG SYSTEM] Motor RAG cargado")
 
     def diagnose(self, formatted_text: str) -> str:
         try: 
@@ -82,3 +82,5 @@ class RAG:
         
         except Exception as e:
             return f"Error en RAG: {str(e)}"
+
+rag_engine = RAG()
