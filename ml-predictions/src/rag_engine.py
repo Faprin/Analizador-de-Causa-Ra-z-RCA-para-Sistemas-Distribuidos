@@ -2,6 +2,8 @@ from langchain_ollama import ChatOllama
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
 FAISS_PATH='../vectorstore/faiss_index'
 
@@ -54,8 +56,29 @@ class RAG:
 
         self.retriever = self.vectorstore.as_retriever()
 
-        self.promp = ChatPromptTemplate.from_messages([
+        self.prompt = ChatPromptTemplate.from_messages([
             ("system", template),
-            MessagesPlaceholder(variable='history'),
+            # MessagesPlaceholder(variable='history'),
             ("human", "Analiza este log anomalo y dime qué ha pasado: \n\n{input}")
         ])
+
+        def faiss_search(entry_dic):
+            docs = self.retriever.invoke(entry_dic["input"])
+            return "\n\n".join(doc.page_content for doc in docs)
+
+        self.rag_chain = (
+            RunnablePassthrough.assign(context=faiss_search)
+            | self.prompt
+            | self.llm
+            | StrOutputParser
+        )
+
+        print("[SYSTEM] Motor RAG cargado")
+
+    def diagnose(self, formatted_text: str) -> str:
+        try: 
+            response = self.rag_chain.invoke({"input": formatted_text})
+            return response
+        
+        except Exception as e:
+            return f"Error en RAG: {str(e)}"
