@@ -28,11 +28,10 @@ template = """
     🚨 **Análisis de Causa Raíz (RCA)**
     * **Microservicio Origen:** [Nombre del servicio que falló primero]
     * **Excepción Principal:** [Tipo de error, ej. NullPointerException, Timeout]
-    * **Diagnóstico:** [Explicación técnica de 2 o 3 líneas de por qué ocurrió según el contexto]
+    * **Diagnóstico:** [Explicación técnica de 4 o 5 líneas de por qué ocurrió según el contexto]
 
     🛠️ **Plan de Mitigación (Runbook)**
-    1. [Paso 1 para solucionarlo]
-    2. [Paso 2 para solucionarlo]
+    - Genera tantos pasos como sean necesarios para mitigar el problema
 """
 
 class RAG:
