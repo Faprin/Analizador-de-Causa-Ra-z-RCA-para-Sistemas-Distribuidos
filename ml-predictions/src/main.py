@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Body
 from typing import Optional
 from pydantic import BaseModel, Field
 from contextlib import asynccontextmanager
@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
     print("[*] ISOLATION cargado correctamente")
 
     print("[*] Cargando RAG engine")
-    rag = RAG()
+    app.state.rag_model = RAG()
     print("[*] RAG engine cargada correctamente")
     
     # ejecucion del contexto
@@ -177,6 +177,16 @@ def summary(horas: int = 1, limite: int = 1000):
         "rango_horas":      horas
     }
 
+@app.post("/ollama/analize")
+def ollama_analize(request: Request, log: str = Body(embed=True)):
+
+    if not log:
+        return {"response": "Se ha recibido un log vacio"}
+
+    model = request.app.state.rag_model
+    response = model.diagnose(log)
+
+    return {"response": response}
 
 # ============================
 # FUNCIONES AUXILIARES  

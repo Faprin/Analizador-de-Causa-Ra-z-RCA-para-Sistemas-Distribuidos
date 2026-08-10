@@ -8,8 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-FASTAPI_URL = "http://isolation-backend:8000/analize" 
-OLLAMA_URL = ""
+FASTAPI_URL = "http://isolation-backend:8000"
 
 st.title("🔍 Analizador de Causa Raíz (RCA)")
 st.markdown("Monitor de anomalías en tiempo real usando Isolation Forest.")
@@ -21,7 +20,7 @@ st.divider()
 @st.cache_data(ttl=5)
 def fetch_predictions():
     try:
-        response = requests.get(FASTAPI_URL, timeout=10)
+        response = requests.get(f"{FASTAPI_URL}/analize", timeout=10)
         if response.status_code == 200:
             return response.json()
         else:
@@ -55,10 +54,12 @@ def anomaly_format(logs_anomalos):
 def call_ai(texto_formateado):
     
     try:
-        respuesta = requests.post(OLLAMA_URL, json=texto_formateado, timeout=60)
+        payload = {"log": texto_formateado}
+        respuesta = requests.post(f"{FASTAPI_URL}/ollama/analize", json=payload, timeout=60)
         if respuesta.status_code == 200:
             return respuesta.json().get("response", "Respuesta vacía del modelo.")
-        return f"Error en Ollama: {respuesta.status_code}"
+        
+        return f"Error HTTP {respuesta.status_code}: {respuesta.text}"
     except Exception as e:
         return f"Error conectando a Ollama: {str(e)}"
 

@@ -40,11 +40,13 @@ class RAG:
         # inicializacion del modelo 
         self.llm = ChatOllama(
             model = "llama3.2:3b",
-            temperature=0.0
+            temperature=0.0,
+            base_url="http://host.docker.internal:11434"
         )
 
         self.embeddings = OllamaEmbeddings(
-            model = "nomic-embed-text"
+            model = "nomic-embed-text",
+            base_url="http://host.docker.internal:11434"
         )
 
         self.vectorstore = FAISS.load_local(
@@ -69,7 +71,7 @@ class RAG:
             RunnablePassthrough.assign(context=faiss_search)
             | self.prompt
             | self.llm
-            | StrOutputParser
+            | StrOutputParser()
         )
 
         print("[RAG SYSTEM] Motor RAG cargado")
