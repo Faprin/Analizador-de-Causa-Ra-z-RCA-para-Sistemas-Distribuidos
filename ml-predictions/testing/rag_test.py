@@ -80,7 +80,7 @@ for caso in casos_de_prueba:
     
     respuesta = rag_model.diagnose(texto_formateado)
     
-    print("RESPUESTA DE LLAMA 3.2:")
+    print("RESPUESTA DE LLAMA 3.1:")
     print("-" * 40)
     print(respuesta)
     print("=" * 50)

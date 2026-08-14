@@ -42,7 +42,7 @@ class RAG:
 
         # inicializacion del modelo 
         self.llm = ChatOllama(
-            model = "llama3.2:3b",
+            model = "llama3.1",
             temperature=0.0,
             base_url= base_url
         )
