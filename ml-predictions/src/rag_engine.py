@@ -35,18 +35,20 @@ template = """
 """
 
 class RAG:
-    def __init__(self):
+    def __init__(self, docker: bool = False):
+
+        base_url = "http://host.docker.internal:11434" if docker else "http://localhost:11434"
 
         # inicializacion del modelo 
         self.llm = ChatOllama(
             model = "llama3.2:3b",
             temperature=0.0,
-            base_url="http://host.docker.internal:11434"
+            base_url= base_url
         )
 
         self.embeddings = OllamaEmbeddings(
             model = "nomic-embed-text",
-            base_url="http://host.docker.internal:11434"
+            base_url=base_url
         )
 
         self.vectorstore = FAISS.load_local(
