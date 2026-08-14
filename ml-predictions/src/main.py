@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
     print("[*] ISOLATION cargado correctamente")
 
     print("[*] Cargando RAG engine")
-    app.state.rag_model = RAG()
+    app.state.rag_model = RAG(docker=True)
     print("[*] RAG engine cargada correctamente")
     
     # ejecucion del contexto
